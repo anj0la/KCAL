@@ -96,13 +96,10 @@ CREATE TABLE FOOD
 CREATE TABLE MEAL 
 (
 	meal_id INT, 
-	meal_timestamp TIMESTAMP,
+	meal_timestamp TIMESTAMP, -- unique
 	meal_date DATE, -- foreign key, PK is in DAY
 	meal_category VARCHAR(20)
 );
--- PRIMARY KEY AND UNIQUENESS CONSTRAINTS GO HERE
--- EXAMPLE: ALTER TABLE MEAL
--- 			ADD CONSTRAINT PK_Meal PRIMARY KEY (meal_id);
 
 -- RELATIONSHIP TABLE (MANY TO MANY)
 CREATE TABLE MEAL_CONTAINS_FOOD 
@@ -114,8 +111,8 @@ CREATE TABLE MEAL_CONTAINS_FOOD
 -- ========================================= ALTER TABLE STATEMENTS =========================================
 
 -- Users
-ALTER TABLE USERS
-ADD PRIMARY KEY (User_id);
+ALTER TABLE USER
+ADD PRIMARY KEY (user_id);
 
 -- Day
 ALTER TABLE DAY
@@ -151,6 +148,8 @@ ADD CONSTRAINT fk_meal_date
 FOREIGN KEY (meal_date)
 REFERENCES DAY(`date`),
 
+-- Uniqueness constraint on meal timestamp
+ADD CONSTRAINT meal_timestamp_uniqueness UNIQUE (meal_timestamp),
 ADD PRIMARY KEY (meal_id);
 
 -- Meal Contains Food
@@ -181,6 +180,51 @@ REFERENCES WORKOUT(workout_id),
 
 ADD PRIMARY KEY(exercise_id, workout_id);
 
+-- ========================================= INSERT QUERIES =========================================
+
+-- USERS
+INSERT INTO USER VALUES 
+
+-- active user: Jonathan Magnus ID: #1
+(1, 'Jonathan', 'Magnus', 1997-09-24, 'Male', 
+'Jmagnus', 'Jmagnus@yahoo.com', '1$CoolPassword$1',
+178,145,190,"duck_img.png",2022-01-01,2024-04-09),
+
+-- semi-active user: Maris Allen ID: #2
+(2, 'Maris', 'Allen', 2000-03-15, 'Female', 
+'MissMaris', 'MAllen@gmail.com', '1LoveCoffee&TeaCrisps',
+166,200,140,"cat_img.png",2023-02-14,2024-04-0),
+
+-- inactive user: Joshua Phillips ID: #3
+(3, 'Joshua', 'Phillips', 1995-08-27, 'Rather not say', 
+'D_GymRat', 'JPhillips@hotmail.com', 'NevaGiveUp_K**pPu$h1ng',
+180,300,200,"cool_dog_img.png", 2024-01-01, 2024-01-28);
+
+-- DAY
+INSERT INTO `DAY` VALUES 
+-- yesterday
+(2024-04-08, 1),
+
+-- today
+(2024-04-09, 1);
+
+-- WORKOUT
+INSERT INTO WORKOUT VALUES 
+(101, 2024-04-08, 1, "LEGS", 500);
+
+-- EXERCISE
+INSERT INTO EXCERCISE VALUES
+(201, "Bulgarian Split Squats", "None", "Strength Training", "Quadriceps", "Gluteous Maximus"),
+(202, "Barbell Squats", "Barbell", "Strength Training", "Quadriceps", "Gluteous Maximus");
+
+-- MEAL
+INSERT INTO MEAL VALUES 
+(098, 2024-04-08, 1, "Vegetables", '2024-04-08 18-59-13'), 
+(097, 2024-04-08, 1, "Meats", '2024-04-08 10-05-13');
+
+-- FOOD
+INSERT INTO FOOD VALUES 
+(1, 'Turtle Chips', 'Carbohydrate', 28, 'Grams', TRUE, 160, 10, 4, 0, 190, 16, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
 -- ========================================= UPDATE QUERIES =========================================
 
@@ -341,3 +385,5 @@ BEGIN
 														-- to the food_id via the relationship table
 END//
 DELIMITER ;
+
+-- ========================================= SELECT QUERIES =========================================
