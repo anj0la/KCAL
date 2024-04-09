@@ -16,7 +16,7 @@ Changes made:
 CREATE DATABASE IF NOT EXISTS KCAL;
 USE KCAL;
 
-CREATE TABLE `USER` 
+CREATE TABLE USER 
 (
 	 user_id INT,
 	 first_name VARCHAR(15),
@@ -34,7 +34,7 @@ CREATE TABLE `USER`
 	 last_log_date DATE	
 );
 
-CREATE TABLE `DAY` 
+CREATE TABLE DAY 
 (
 	`date` DATE,
 	 user_id INT -- foreign key (many side of relationship between DAY and USER
@@ -98,7 +98,6 @@ CREATE TABLE MEAL
 	meal_id INT, 
 	meal_timestamp TIMESTAMP,
 	meal_date DATE, -- foreign key, PK is in DAY
-	user_id INT, 
 	meal_category VARCHAR(20)
 );
 -- PRIMARY KEY AND UNIQUENESS CONSTRAINTS GO HERE
@@ -111,7 +110,183 @@ CREATE TABLE MEAL_CONTAINS_FOOD
 	meal_id INT, -- foreign key
 	food_id INT -- foreign key
 );
--- DELETE QUERIES
+
+-- ========================================= ALTER TABLE STATEMENTS =========================================
+
+-- Users
+ALTER TABLE USERS
+ADD PRIMARY KEY (User_id);
+
+-- Day
+ALTER TABLE DAY
+ADD PRIMARY KEY (`date`),
+
+-- Foreign key constraint (many days correspond to a user)
+ADD CONSTRAINT fk_user_id
+FOREIGN KEY (user_id)
+REFERENCES USER(user_id);
+
+-- Workout
+ALTER TABLE WORKOUT
+
+ADD CONSTRAINT fk_workout_user_id
+FOREIGN KEY (user_id)
+REFERENCES USER(user_id),
+
+ADD PRIMARY KEY (workout_id);
+
+-- Exercise
+ALTER TABLE EXERCISE
+ADD PRIMARY KEY (exercise_id);
+
+-- Food
+ALTER TABLE FOOD
+ADD PRIMARY KEY (food_id);
+
+-- Meal
+ALTER TABLE MEAL
+
+-- Foreign key constraint (many meals correspond to a day)
+ADD CONSTRAINT fk_meal_date
+FOREIGN KEY (meal_date)
+REFERENCES DAY(`date`),
+
+ADD PRIMARY KEY (meal_id);
+
+-- Meal Contains Food
+ALTER TABLE MEAL_CONTAINS_FOOD
+
+-- Foreign key constraints (many meals correspond to many meals)
+ADD CONSTRAINT fk_meal_id
+FOREIGN KEY (meal_id)
+REFERENCES MEAL(meal_id),
+
+ADD CONSTRAINT fk_food_id
+FOREIGN KEY (food_id)
+REFERENCES FOOD(food_id),
+
+ADD PRIMARY KEY(meal_id, food_id);
+
+-- Workout Made of Exercise
+ALTER TABLE WORKOUT_MADE_OF_EXERCISE
+
+-- Foreign key constraints (many exercises correspond to many workouts)
+ADD CONSTRAINT fk_exercise_id
+FOREIGN KEY (exercise_id)
+REFERENCES EXERCISE(exercise_id),
+
+ADD CONSTRAINT fk_workout_id
+FOREIGN KEY (workout_id)
+REFERENCES WORKOUT(workout_id),
+
+ADD PRIMARY KEY(exercise_id, workout_id);
+
+
+-- ========================================= UPDATE QUERIES =========================================
+
+-- UPDATE STATEMENTS: USER TABLE -- 
+
+-- UPDATE PASSWORD (ie. change password) --
+
+UPDATE USERS
+SET Password = '12345'
+WHERE User_id = 1;
+
+-- UPDATE WEIGHT (adjust current weight for progress)           --
+-- Weight is measured as an int, assuming we are meaning pounds --
+
+UPDATE USERS 
+SET Weight = 125
+WHERE User_id = 1;
+
+-- UPDATE TARGET WEIGHT (adjust target weight for new goals)    --
+-- Weight is measured as an int, assuming we are meaning pounds --
+
+UPDATE USERS
+SET Target_weight = 120
+WHERE User_id = 1;
+
+-- UPDATE LAST LOGGED IN (adjust the last time the user logged in) --
+
+UPDATE USERS
+SET Last_log_date = CURRENT_DATE();
+
+-- ========================================= -- 
+
+-- UPDATE STATEMENTS: DAY TABLE -- 
+
+-- UPDATE DAY (Update DAY to the current day) --
+
+UPDATE DAY
+JOIN USERS ON DAY.User_id = USERS.User_id
+SET DAY.Date = CURRENT_DATE()
+WHERE user_id = 1;
+
+-- ========================================= -- 
+
+-- UPDATE STATEMENTS: MEAL TABLE -- 
+
+-- UPDATE MEAL CATEGORY (BREAKFAST, LUNCH, DINNER) --
+
+UPDATE MEAL
+JOIN USERS ON MEAL.User_id = USERS.User_id
+SET Meal_category = 'Lunch'
+WHERE Meal_id = 1;
+
+-- UPDATE MEAL TIME STAMP (DATE AND TIME) --
+
+UPDATE MEAL
+JOIN USERS ON MEAL.User_id = USERS.User_id
+SET Meal_timestamp = NOW() -- NOW() GETS CURRENT TIME AND DATE
+WHERE Meal_id = 1;
+
+-- ========================================= -- 
+
+-- UPDATE STATEMENTS: WORKOUT TABLE -- 
+
+-- UPDATE DATE FROM WORKOUT TO (DAY) DATE (Update DAY to the current day) --
+
+UPDATE WORKOUT
+JOIN DAY ON WORKOUT.User_id = DAY.User_id
+SET WORKOUT.Date = DAY.Date
+WHERE USERS.User_id = 1;
+
+-- UPDATE CALORIES BURNED (Update the number of calories burned throughout the workout) -- 
+-- ASSUMPTION: We are updating the calories based on the current calories burned --
+
+UPDATE WORKOUT
+SET Calories_burned = Calories_burned + 5 -- ADDING TO THE CURRENT CALORIES BURNED --
+WHERE Workout_id = 1;
+
+-- ========================================= -- 
+
+-- UPDATE STATEMENTS: FOOD TABLE -- 
+
+-- UPDATE THE SERVING SIZE BASED ON THE CURRENT SERVING SIZE -- 
+
+UPDATE FOOD
+SET Serving_size = Serving_size + 10 
+WHERE Food_id = 1;
+
+-- ========================================= -- 
+
+-- UPDATE STATEMENTS: EXERCISE TABLE -- 
+
+-- UPDATE AN ENTIRE EXERCISE FOR A SPECIFIC Exercise_id-- 
+
+UPDATE EXERCISE
+JOIN USERS ON EXERCISE.User_id = USERS.User_id
+SET Exercise_name = 'Booty Pop',
+    Equipment_type = 'Dumbbells',
+    Exercise_Category = 'Strength',
+    Primary_muscle_grp = 'Butt',
+    Secondary_muscle_grp = 'Legs'
+WHERE Exercise_id = 1;
+
+-- ========================================= -- 
+
+
+-- ========================================= DELETE QUERIES =========================================
 
 DELIMITER //
 
