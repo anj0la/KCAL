@@ -18,44 +18,44 @@ USE KCAL;
 
 CREATE TABLE USER 
 (
-	 user_id INT,
-	 first_name VARCHAR(15),
-	 last_name VARCHAR(15),
-	 date_of_birth DATE, 
-	 gender VARCHAR(15), 
-	 username VARCHAR(15), -- NOT UNIQUE, so users can have the same username
-	 email VARCHAR(25), 
-	 `password` VARCHAR(25), 
-	 height INT, 
-	 weight INT, 
-	 target_weight INT, 
+	 user_id INT NOT NULL,
+	 first_name VARCHAR(15) NOT NULL,
+	 last_name VARCHAR(15) NOT NULL,
+	 date_of_birth DATE NOT NULL, 
+	 gender VARCHAR(15) NOT NULL, 
+	 username VARCHAR(15) NOT NULL, -- NOT UNIQUE, so users can have the same username
+	 email VARCHAR(25) NOT NULL, 
+	 `password` VARCHAR(25) NOT NULL, 
+	 height INT NOT NULL, 
+	 weight INT NOT NULL, 
+	 target_weight INT NOT NULL, 
 	 profile_img LONGBLOB, 
-	 join_date DATE, 
-	 last_log_date DATE	
+	 join_date DATE NOT NULL, 
+	 last_log_date DATE	 NOT NULL
 );
 
 CREATE TABLE DAY 
 (
-	`date` DATE,
+	`date` DATE NOT NULL,
 	 user_id INT -- foreign key (many side of relationship between DAY and USER
 ); 
 
 CREATE TABLE WORKOUT 
 (
-	workout_id INT,
-	workout_name VARCHAR(20), 
-	workout_date DATE, 
+	workout_id INT NOT NULL,
+	workout_name VARCHAR(20) NOT NULL, 
+	workout_date DATE NOT NULL, 
 	user_id INT, -- foreign key, many side of WORKOUT and USER
-	calories_burned INT
+	calories_burned INT NOT NULL
 );
 
 CREATE TABLE EXERCISE 
 (
-	exercise_id INT, 
-	exercise_name VARCHAR(25), 
+	exercise_id INT NOT NULL, 
+	exercise_name VARCHAR(25) NOT NULL, 
 	equipment_type VARCHAR(25), 
-	exercise_category VARCHAR(25), 
-	primary_muscle_grp VARCHAR(25), 
+	exercise_category VARCHAR(25) NOT NULL, 
+	primary_muscle_grp VARCHAR(25) NOT NULL, 
 	secondary_muscle_grp VARCHAR(25)
 );
 
@@ -68,11 +68,11 @@ CREATE TABLE WORKOUT_MADE_OF_EXERCISE
 
 CREATE TABLE FOOD 
 (
-	food_id INT, 
-	food_name VARCHAR(25), 
-	food_category VARCHAR(20), 
-	serving_size INT, 
-	serving_unit VARCHAR(15), 
+	food_id INT NOT NULL, 
+	food_name VARCHAR(25) NOT NULL, 
+	food_category VARCHAR(20) NOT NULL, 
+	serving_size INT NOT NULL, 
+	serving_unit VARCHAR(15) NOT NULL, 
 	is_metric BOOLEAN, 
 	calories INT, 
 	total_fats INT, 
@@ -95,10 +95,10 @@ CREATE TABLE FOOD
 
 CREATE TABLE MEAL 
 (
-	meal_id INT, 
+	meal_id INT NOT NULL, 
 	meal_timestamp TIMESTAMP, -- unique
 	meal_date DATE, -- foreign key, PK is in DAY
-	meal_category VARCHAR(20)
+	meal_category VARCHAR(20) NOT NULL
 );
 
 -- RELATIONSHIP TABLE (MANY TO MANY)
@@ -109,6 +109,8 @@ CREATE TABLE MEAL_CONTAINS_FOOD
 );
 
 -- ========================================= ALTER TABLE STATEMENTS =========================================
+
+-- WE NEED ON UPDATE AND ON DELETE RIGHT?
 
 -- Users
 ALTER TABLE USER
@@ -231,6 +233,16 @@ INSERT INTO FOOD VALUES
 -- UPDATE STATEMENTS: USER TABLE -- 
 
 -- UPDATE PASSWORD (ie. change password) --
+
+DELIMITER //
+CREATE PROCEDURE UpdateUserPassword(IN user_id INT, IN new_password INT)
+BEGIN
+	UPDATE USER
+SET password = new_password
+WHERE user_id = user_id;
+END//
+DELIMITER ;
+
 
 UPDATE USERS
 SET Password = '12345'
@@ -387,3 +399,19 @@ END//
 DELIMITER ;
 
 -- ========================================= SELECT QUERIES =========================================
+
+SELECT u.first_name, u.last_name, u.username, w.workout_date, w.calories_burned
+FROM USER u
+INNER JOIN WORKOUT w ON u.user_id = w.user_id
+WHERE w.workout_name = ‘Upper Body’;
+
+DELIMITER //
+CREATE PROCEDURE SelectAllUsersByWorkoutName(IN workout_name)
+BEGIN
+	SELECT u.first_name, u.last_name, u.username, w.workout_date, w.calories_burned
+FROM USER u
+INNER JOIN WORKOUT w ON u.user_id = w.user_id
+WHERE w.workout_name = workout_name;
+END//
+DELIMITER ;
+
