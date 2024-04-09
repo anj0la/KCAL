@@ -138,13 +138,31 @@ DELIMITER ;
 -- day from the table, just the foods and the meal itself
 
 DELIMITER //
-CREATE PROCEDURE DeleteAllFoodsFromSpecifiedMeal(IN meal_id INT)
+CREATE PROCEDURE DeleteAllFoodsFromMeal(IN meal_id INT)
 BEGIN
 	DELETE FROM FOOD
-	WHERE FOOD.id IN (
+	WHERE FOOD.food_id IN (
     SELECT MEAL_CONTAINS_FOOD.food_id
     FROM MEAL_CONTAINS_FOOD
-    JOIN MEAL ON MEAL_CONTAINS_FOOD.MEAL_id = meal_id); -- we use a select statement to link the meal_id
+    JOIN MEAL ON MEAL_CONTAINS_FOOD.meal_id = meal_id
+    WHERE MEAL_CONTAINS_FOOD.food_id = FOOD.food_id); -- we use a select statement to link the meal_id
+													  -- to the food_id via the relationship table
+END//
+DELIMITER ;
+
+-- Deleting a specific food from a specified meal (as a stored procedure)
+-- The difference between this procedure and its former is that it does not delete the 
+-- day from the table, just the foods and the meal itself
+
+DELIMITER //
+CREATE PROCEDURE DeleteFoodFromMeal(IN meal_id INT, IN food_id INT)
+BEGIN
+	DELETE FROM FOOD
+	WHERE food_id IN (
+    SELECT MEAL_CONTAINS_FOOD.food_id
+    FROM MEAL_CONTAINS_FOOD
+    JOIN MEAL ON MEAL_CONTAINS_FOOD.meal_id = meal_id
+    WHERE MEAL_CONTAINS_FOOD.food_id = food_id); -- we use a select statement to link the meal_id
 														-- to the food_id via the relationship table
 END//
 DELIMITER ;
