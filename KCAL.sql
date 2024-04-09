@@ -138,9 +138,13 @@ DELIMITER ;
 -- day from the table, just the foods and the meal itself
 
 DELIMITER //
-CREATE PROCEDURE DeleteAllFoodsFromSpecifiedMeal(IN specified_date DATE)
+CREATE PROCEDURE DeleteAllFoodsFromSpecifiedMeal(IN meal_id INT)
 BEGIN
 	DELETE FROM FOOD
-    WHERE (MEAL.day_id = DAY.day_id) AND (DAY.date = specified_date);
+	WHERE FOOD.id IN (
+    SELECT MEAL_CONTAINS_FOOD.food_id
+    FROM MEAL_CONTAINS_FOOD
+    JOIN MEAL ON MEAL_CONTAINS_FOOD.MEAL_id = meal_id); -- we use a select statement to link the meal_id
+														-- to the food_id via the relationship table
 END//
 DELIMITER ;
