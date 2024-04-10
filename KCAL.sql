@@ -73,7 +73,7 @@ CREATE TABLE FOOD
 	food_category VARCHAR(20) NOT NULL, 
 	serving_size INT NOT NULL, 
 	serving_unit VARCHAR(15) NOT NULL, 
-	is_metric BOOLEAN, 
+	is_metric BOOLEAN NOT NULL, 
 	calories INT, 
 	total_fats INT, 
 	saturated_fats INT, 
@@ -142,6 +142,9 @@ ADD PRIMARY KEY (exercise_id);
 ALTER TABLE FOOD
 ADD PRIMARY KEY (food_id);
 
+ALTER TABLE FOOD
+ALTER is_metric SET DEFAULT 1; -- the default value for metric is true
+
 -- Meal
 ALTER TABLE MEAL
 
@@ -187,18 +190,25 @@ ADD PRIMARY KEY(exercise_id, workout_id);
 -- USERS
 INSERT INTO USER VALUES 
 
--- active user: Jonathan Magnus ID: #1
+-- Active Users
 (1, 'Jonathan', 'Magnus', 1997-09-24, 'Male', 
 'Jmagnus', 'Jmagnus@yahoo.com', '1$CoolPassword$1',
-178,145,190,"duck_img.png",2022-01-01,2024-04-09),
+178, 145, 190, 'duck_img.png', 2022-01-01, 2024-04-09),
 
--- semi-active user: Maris Allen ID: #2
-(2, 'Maris', 'Allen', 2000-03-15, 'Female', 
-'MissMaris', 'MAllen@gmail.com', '1LoveCoffee&TeaCrisps',
-166,200,140,"cat_img.png",2023-02-14,2024-04-0),
+(2, 'Wendy', 'Woo', 2000-02-07, 'Female', 
+'wendytheleader', 'wendy.woo@gmail.com', 'password$2452',
+178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
 
--- inactive user: Joshua Phillips ID: #3
-(3, 'Joshua', 'Phillips', 1995-08-27, 'Rather not say', 
+(3, 'Sandra', 'Parker', 1989-05-12, 'Female', 
+'sandragymgirl', 'sparker@hotmail.com', '',
+178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
+
+(4, 'Wendy', 'Woo', 2000-02-07, 'Female', 
+'wendytheleader', 'wendy.woo@gmail.com', '',
+178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
+
+-- Inactive Users
+(5, 'Joshua', 'Phillips', 1995-08-27, 'Rather not say', 
 'D_GymRat', 'JPhillips@hotmail.com', 'NevaGiveUp_K**pPu$h1ng',
 180,300,200,"cool_dog_img.png", 2024-01-01, 2024-01-28);
 
@@ -244,28 +254,28 @@ END//
 DELIMITER ;
 
 
-UPDATE USERS
-SET Password = '12345'
-WHERE User_id = 1;
+UPDATE USER
+SET password = '12345'
+WHERE user_id = 1;
 
 -- UPDATE WEIGHT (adjust current weight for progress)           --
 -- Weight is measured as an int, assuming we are meaning pounds --
 
-UPDATE USERS 
-SET Weight = 125
-WHERE User_id = 1;
+UPDATE USER 
+SET weight = 125
+WHERE user_id = 1;
 
 -- UPDATE TARGET WEIGHT (adjust target weight for new goals)    --
 -- Weight is measured as an int, assuming we are meaning pounds --
 
-UPDATE USERS
-SET Target_weight = 120
-WHERE User_id = 1;
+UPDATE USER
+SET target_weight = 120
+WHERE user_id = 1;
 
 -- UPDATE LAST LOGGED IN (adjust the last time the user logged in) --
 
-UPDATE USERS
-SET Last_log_date = CURRENT_DATE();
+UPDATE USER
+SET last_log_date = CURRENT_DATE();
 
 -- ========================================= -- 
 
@@ -273,9 +283,9 @@ SET Last_log_date = CURRENT_DATE();
 
 -- UPDATE DAY (Update DAY to the current day) --
 
-UPDATE DAY
-JOIN USERS ON DAY.User_id = USERS.User_id
-SET DAY.Date = CURRENT_DATE()
+UPDATE `DAY`
+JOIN USER ON DAY.user_id = USER.user_id
+SET DAY.date = CURRENT_DATE()
 WHERE user_id = 1;
 
 -- ========================================= -- 
@@ -285,16 +295,16 @@ WHERE user_id = 1;
 -- UPDATE MEAL CATEGORY (BREAKFAST, LUNCH, DINNER) --
 
 UPDATE MEAL
-JOIN USERS ON MEAL.User_id = USERS.User_id
-SET Meal_category = 'Lunch'
-WHERE Meal_id = 1;
+JOIN USER ON MEAL.user_id = USER.user_id
+SET meal_category = 'Lunch'
+WHERE meal_id = 1;
 
 -- UPDATE MEAL TIME STAMP (DATE AND TIME) --
 
 UPDATE MEAL
-JOIN USERS ON MEAL.User_id = USERS.User_id
-SET Meal_timestamp = NOW() -- NOW() GETS CURRENT TIME AND DATE
-WHERE Meal_id = 1;
+JOIN USER ON MEAL.user_id = USER.user_id
+SET meal_timestamp = NOW() -- NOW() GETS CURRENT TIME AND DATE
+WHERE meal_id = 1;
 
 -- ========================================= -- 
 
@@ -303,16 +313,16 @@ WHERE Meal_id = 1;
 -- UPDATE DATE FROM WORKOUT TO (DAY) DATE (Update DAY to the current day) --
 
 UPDATE WORKOUT
-JOIN DAY ON WORKOUT.User_id = DAY.User_id
-SET WORKOUT.Date = DAY.Date
-WHERE USERS.User_id = 1;
+JOIN DAY ON WORKOUT.user_id = DAY.user_id
+SET WORKOUT.date = DAY.date
+WHERE USER.User_id = 1;
 
 -- UPDATE CALORIES BURNED (Update the number of calories burned throughout the workout) -- 
 -- ASSUMPTION: We are updating the calories based on the current calories burned --
 
 UPDATE WORKOUT
-SET Calories_burned = Calories_burned + 5 -- ADDING TO THE CURRENT CALORIES BURNED --
-WHERE Workout_id = 1;
+SET calories_burned = calories_burned + 5 -- ADDING TO THE CURRENT CALORIES BURNED --
+WHERE workout_id = 1;
 
 -- ========================================= -- 
 
@@ -321,8 +331,8 @@ WHERE Workout_id = 1;
 -- UPDATE THE SERVING SIZE BASED ON THE CURRENT SERVING SIZE -- 
 
 UPDATE FOOD
-SET Serving_size = Serving_size + 10 
-WHERE Food_id = 1;
+SET serving_size = serving_size + 10 
+WHERE food_id = 1;
 
 -- ========================================= -- 
 
@@ -331,18 +341,20 @@ WHERE Food_id = 1;
 -- UPDATE AN ENTIRE EXERCISE FOR A SPECIFIC Exercise_id-- 
 
 UPDATE EXERCISE
-JOIN USERS ON EXERCISE.User_id = USERS.User_id
-SET Exercise_name = 'Booty Pop',
-    Equipment_type = 'Dumbbells',
-    Exercise_Category = 'Strength',
-    Primary_muscle_grp = 'Butt',
-    Secondary_muscle_grp = 'Legs'
-WHERE Exercise_id = 1;
+SET exercise_name = 'Squat',
+    equipment_type = 'Barbell',
+    exercise_Category = 'Strength Training',
+    primary_muscle_grp = 'Glutes',
+    secondary_muscle_grp = 'Quads'
+WHERE exercise_id = 1;
 
 -- ========================================= -- 
 
 
 -- ========================================= DELETE QUERIES =========================================
+
+-- All delete queries were stored using procedures, so that the statements can be executed given the parameters.
+-- To execute the query, you would call the procedure along with parameter values. Some examples have been provided below.
 
 DELIMITER //
 
@@ -350,10 +362,17 @@ DELIMITER //
 CREATE PROCEDURE DeleteUser(IN user_id INT)
 BEGIN
 	-- Delete the user from the USERS table with the specified user id
-	DELETE FROM `USER`
-    WHERE `USER`.user_id = user_id;
+	DELETE FROM USER
+    WHERE USER.user_id = user_id;
 END//
 DELIMITER ;
+
+-- Example: Delete user 4 from the table
+SELECT * 
+FROM USER;
+DeleteUser(4)
+SELECT * 
+FROM USER;
 
 -- Deleting all meals from a specified day (as a stored procedure)
 DELIMITER //
@@ -363,6 +382,13 @@ BEGIN
     WHERE (MEAL.meal_date = `DAY`.`date`) AND (`DAY`.`date` = specified_date);
 END//
 DELIMITER ;
+
+-- Example: Delete all meals from April 6th, 2024.
+SELECT * 
+FROM MEAL;
+DeleteAllMealsFromSpecifiedDay('2024-04-06')
+SELECT * 
+FROM MEAL;
 
 -- Deleting all foods from a specified meal (as a stored procedure)
 -- The difference between this procedure and its former is that it does not delete the 
@@ -381,6 +407,13 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Example: Delete all foods from a meal with meal id 3
+SELECT * 
+FROM FOOD;
+DeleteAllFoodsFromMeal(4)
+SELECT * 
+FROM FOOD;
+
 -- Deleting a specific food from a specified meal (as a stored procedure)
 -- The difference between this procedure and its former is that it does not delete the 
 -- day from the table, just the foods and the meal itself
@@ -398,12 +431,19 @@ BEGIN
 END//
 DELIMITER ;
 
+-- Example: Delete food id 1 from a meal with meal id 4
+SELECT * 
+FROM FOOD;
+DeleteAllFoodsFromMeal(1, 4)
+SELECT * 
+FROM FOOD;
+
 -- ========================================= SELECT QUERIES =========================================
 
 SELECT u.first_name, u.last_name, u.username, w.workout_date, w.calories_burned
 FROM USER u
 INNER JOIN WORKOUT w ON u.user_id = w.user_id
-WHERE w.workout_name = ‘Upper Body’;
+WHERE w.workout_name = 'Upper';
 
 DELIMITER //
 CREATE PROCEDURE SelectAllUsersByWorkoutName(IN workout_name)
