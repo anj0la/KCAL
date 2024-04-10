@@ -226,17 +226,17 @@ INSERT INTO WORKOUT VALUES
 
 -- EXERCISE
 INSERT INTO EXCERCISE VALUES
-(201, "Bulgarian Split Squats", "None", "Strength Training", "Quadriceps", "Gluteous Maximus"),
-(202, "Barbell Squats", "Barbell", "Strength Training", "Quadriceps", "Gluteous Maximus");
+(201, "Bulgarian Split Squats", "Dumbbell", "Strength Training", "Quadriceps", "Glutes"),
+(202, "Squats", "Barbell", "Strength Training", "Quadriceps", "Glutes");
 
 -- MEAL
 INSERT INTO MEAL VALUES 
-(098, 2024-04-08, 1, "Vegetables", '2024-04-08 18-59-13'), 
-(097, 2024-04-08, 1, "Meats", '2024-04-08 10-05-13');
+(98, 2024-04-08, 1, "Breakfast", '2024-04-08 18-59-13'), 
+(97, 2024-04-08, 1, "Lunch", '2024-04-08 10-05-13');
 
 -- FOOD
 INSERT INTO FOOD VALUES 
-(1, 'Turtle Chips', 'Carbohydrate', 28, 'Grams', TRUE, 160, 10, 4, 0, 190, 16, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+(1, 'Turtle Chips', 'Chips', 28, 'Grams', 1, 160, 10, 4, 0, 190, 16, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0);
 
 -- ========================================= UPDATE QUERIES =========================================
 
