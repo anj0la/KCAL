@@ -29,7 +29,6 @@ CREATE TABLE USER
 	 height INT NOT NULL, 
 	 weight INT NOT NULL, 
 	 target_weight INT NOT NULL, 
-	 profile_img LONGBLOB, 
 	 join_date DATE NOT NULL, 
 	 last_log_date DATE	 NOT NULL
 );
@@ -123,7 +122,9 @@ ADD PRIMARY KEY (`date`),
 -- Foreign key constraint (many days correspond to a user)
 ADD CONSTRAINT fk_user_id
 FOREIGN KEY (user_id)
-REFERENCES USER(user_id);
+REFERENCES USER(user_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE;
 
 -- Workout
 ALTER TABLE WORKOUT
