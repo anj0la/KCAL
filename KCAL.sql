@@ -208,53 +208,122 @@ ADD PRIMARY KEY(exercise_id, workout_id);
 
 -- ========================================= INSERT QUERIES =========================================
 
--- Inserting dummy data into USER table
-INSERT INTO USER (user_id, first_name, last_name, date_of_birth, gender, username, email, password, height, weight, target_weight, join_date, last_log_date)
-VALUES 
-(1, 'John', 'Doe', '1990-01-01', 'Male', 'johndoe', 'johndoe@example.com', 'password123', 180, 75, 70, '2024-01-01', '2024-04-09'),
-(2, 'Jane', 'Smith', '1985-05-15', 'Female', 'janesmith', 'janesmith@example.com', 'password456', 160, 55, 50, '2024-02-01', '2024-04-09');
+-- USERS
+INSERT INTO USER VALUES 
 
--- Inserting dummy data into DAY table
-INSERT INTO DAY (`date`, user_id)
-VALUES 
-('2024-04-09', 1),
-('2024-04-08', 2);
+-- Active Users
+-- id  fname       lnmae         DOB		   gender			username			email					password					h	 w    t_w	join_date	last_log_date
+(1, 'Jonathan',   'Magnus', 	'1997-09-24', 'Male', 			'Jmagnus', 			'Jmagnus@yahoo.com',	  '1$CoolPassword$1',		178, 145, 190, '2022-01-01', '2024-04-09'),
+(2, 'Maris',      'Woo', 		'2000-02-07', 'Female', 		'Marris',       	'Maris.woo@gmail.com', 	  'password$2452', 			153, 110, 120, '2020-02-11', '2024-04-09'),
+(3, 'Sandra',     'Parker', 	'1989-05-12', 'Female', 		'sandragymgirl', 	'sparker@hotmail.com', 	  '',						178, 145, 190, '2020-02-11', '2024-04-09'),
+(4, 'Wendy',      'Woo', 		'2000-02-07', 'Female', 		'wendytheleader', 	'wendy.woo@gmail.com', 	  '', 						178, 145, 190, '2020-02-11', '2024-04-09'),
+(5, 'Joshua',     'Phillips',   '1995-08-27', 'Rather not say', 'D_GymRat', 		'JPhillips@hotmail.com',  'NevaGiveUp_K**pPu$h1ng',	180, 300, 200, '2024-01-01', '2024-01-28'),
+(6, 'Thomas',     'Shelby', 	'1976-05-25', 'Male', 			'Tommy', 			'TShelby@yahoo.com', 	  'PeakyB1inder$', 			172, 180, 200, '2024-01-01', '2024-01-28'),
+(7, 'Arthur',     'Shelby', 	'1978-02-12', 'Male', 			'Arthur_S', 		'AShelby@hotmail.com',    'password_1',				177, 220, 200, '2024-01-01', '2024-01-28'),
+(8, 'Hardin',     'Styles', 	'1997-11-06', 'Male', 			'Hardin', 			'HStyles@gmail.com',      'password_2', 			188, 160, 180, '2024-01-01', '2024-01-28'),
+(9, 'Polly',      'Gray',       '1968-08-17', 'Female', 		'PollyG', 			'PGray@yahoo.com',        'password_3', 			163, 135, 120, '2024-01-01', '2024-01-28'),
+(10, 'Anthony',   'Bridgerton', '1988-04-25', 'Male', 			'Anthonee_B', 		'A.Bridgerton@yahoo.com', 'password_4', 			180, 200, 250, '2024-01-01', '2024-01-28');
 
--- Inserting dummy data into WORKOUT table
-INSERT INTO WORKOUT (workout_id, workout_name, workout_date, user_id, calories_burned)
-VALUES 
-(1, 'Morning Run', '2024-04-09', 1, 300),
-(2, 'Evening Gym Session', '2024-04-09', 2, 500);
+-- DAY
+INSERT INTO `DAY` VALUES 
+-- last 10 days
+('2024-03-31', 2),
+('2024-04-01', 2),
+('2024-04-02', 2),
+('2024-04-03', 2),
+('2024-04-04', 2),
+('2024-04-05', 1),
+('2024-04-06', 1),
+('2024-04-07', 1),
+('2024-04-08', 1),
+('2024-04-09', 1);
 
--- Inserting dummy data into EXERCISE table
-INSERT INTO EXERCISE (exercise_id, exercise_name, equipment_type, exercise_category, primary_muscle_grp, secondary_muscle_grp)
-VALUES 
-(1, 'Running', 'None', 'Cardio', 'Legs', NULL),
-(2, 'Weight Lifting', 'Dumbbells', 'Strength', 'Arms', 'Shoulders');
+-- WORKOUT
+INSERT INTO WORKOUT VALUES 
+-- id    name      date          uid            c_burned
+(101,   "LEGS",  '2024-03-31',    2,               500),
+(102,   "ARMS",  '2024-04-01',    2,               450),
+(103,   "CORE",  '2024-04-02',    2,               300),
+(104,   "LEGS",  '2024-04-02',    2,               500),
+(105,   "ARMS",  '2024-04-03',    2,               450),
 
--- Inserting dummy data into FOOD table
-INSERT INTO FOOD (food_id, food_name, food_category, serving_size, serving_unit, is_metric, calories, total_fats, saturated_fats, cholesterol, sodium, total_carbs, fibre, sugar, protein, calcium, iron, potassium, vitamin_D, magnesium, zinc, vitamin_A, vitamin_C)
-VALUES 
-(1, 'Apple', 'Fruit', '150', 'grams', TRUE, 52, 0.2, 0, 0, 1, 14, 2.4, 10.4, 0.3, 5, 0.1, 107, 0, 5, 0, 3, NULL),
-(2, 'Chicken Breast', 'Poultry', 100, 'grams', TRUE, 165, 3.6, 1, 85, 74, 0, 0, 0, 31, 1, 0.1, 256, 0, 12, 0, 0, NULL);
+(106,   "LEGS",  '2024-04-05',    1,               500),
+(107,   "ARMS",  '2024-04-06',    1,               450),
+(108,   "CORE",  '2024-04-07',    1,               300),
+(109,   "ARMS",  '2024-04-08',    1,               450),
+(110,   "CORE",  '2024-04-09',    1,               300);
 
--- Inserting dummy data into MEAL table
-INSERT INTO MEAL (meal_id, meal_timestamp, meal_date, meal_category)
-VALUES 
-(1, '2024-04-09 12:00:00', '2024-04-09', 'Lunch'),
-(2, '2024-04-09 19:00:00', '2024-04-09', 'Dinner');
 
--- Inserting dummy data into MEAL_CONTAINS_FOOD table
-INSERT INTO MEAL_CONTAINS_FOOD (meal_id, food_id)
-VALUES 
-(1, 1),
-(2, 2);
+-- EXERCISE
+INSERT INTO EXERCISE VALUES
+-- id              name                        equipment_type                 category              pri_muscle_grp             sec_muscle_grp
+(201,    "Bulgarian Split Squat",              "Dumbbell",                    "Strength",           "Quadriceps",              "Gluteus Maximus"),
+(202,    "Sumo Squat",                         "Barbell",                     "Strength",           "Quadriceps",              "Gluteus Maximus"),
+(203,    "Hip Thrust",                         "Machine",                     "Strength",           "Gluteus Maximus",         "Quadriceps"),
+(204,    "Push Up",                            "None",                        "Strength",           "Chest",                   "Triceps"),
+(205,    "Tricep Pull Down",                   "Machine",                     "Strength",           "Triceps",                 "Deltoids"),
+(206,    "Shoulder Shrug",                     "Barbell",                     "Strength",           "Deltoids",                "Forearms"),
+(207,    "Calf Raise",                         "Dumbbell",                    "Strength",           "Gastrocnemius",           "Soleus"),
+(208,    "Dead Lift",                          "Barbell",                     "Strength",           "Gluteus Maximus",          "Quadriceps"),
+(209,    "Running",                            "Machine",                     "Cardio",             "Hamstrings",              "Soleus"),
+(210,    "Jumping Jack",                        "None",                       "Cardio",              "Abdominals",             "Hamstrings");
 
--- Inserting dummy data into WORKOUT_MADE_OF_EXERCISE table
-INSERT INTO WORKOUT_MADE_OF_EXERCISE (workout_id, exercise_id)
+-- WORKOUT_MADE_OF_EXERCISE
+-- For each workout, associate some exercises
+INSERT INTO WORKOUT_MADE_OF_EXERCISE VALUES
+-- (workout_id, exercise_id)  
+(208, 101), -- LEGS workout includes Dead Lift
+(207, 101), -- LEGS workout includes Calf Raise
+(204, 102), -- ARMS workout includes Push Up
+(205, 102), -- ARMS workout includes Tricep Pull Down
+(206, 103), -- CORE workout includes Shoulder Shrug
+(204, 103), -- CORE workout includes Push Up
+(208, 104), -- LEGS workout includes Dead Lift
+(206, 105), -- ARMS workout includes Shoulder Shrug
+(204, 105); -- ARMS workout includes Push Up
+
+-- MEAL 
+INSERT INTO MEAL VALUES
+-- (meal_id, meal_timestamp, meal_date, meal_category) 
+(1, '2024-04-09 08:00:00', '2024-04-09', 'Breakfast'),
+(2, '2024-04-09 12:30:00', '2024-04-09', 'Lunch'),
+(3, '2024-04-09 16:00:00', '2024-04-09', 'Snack'),
+(4, '2024-04-09 19:00:00', '2024-04-06', 'Dinner'),
+(5, '2024-04-09 07:30:00', '2024-04-09', 'Breakfast'),
+(6, '2024-04-09 13:00:00', '2024-04-09', 'Lunch'),
+(7, '2024-04-09 17:30:00', '2024-04-06', 'Snack'),
+(8, '2024-04-09 19:30:00', '2024-04-09', 'Dinner'),
+(9, '2024-04-09 08:30:00', '2024-04-09', 'Breakfast'),
+(10, '2024-04-09 11:30:00', '2024-04-09', 'Brunch');
+
+-- FOOD
+INSERT INTO FOOD VALUES
+-- (food_id, food_name, food_category, serving_size, serving_unit, is_metric, calories, total_fats, saturated_fats, 
+-- cholesterol, sodium, total_carbs, fibre, sugar, protein, calcium, iron, potassium, vitamin_D, magnesium, zinc, vitamin_A, vitamin_C) 
+(1, 'Apple', 'Fruit', 1, 'medium', 0, 95, 0.3, 0.1, 0, 1, 25, 4.4, 19, 0.5, 11, 0.1, 195, 0, 6, 0, 1, 14),
+(2, 'Banana', 'Fruit', 1, 'medium', 0, 105, 0.4, 0.1, 0, 1, 27, 3.1, 14, 1.3, 6, 0.3, 422, 0.1, 32, 0.4, 1, 10),
+(3, 'Chicken Breast', 'Meat', 100, 'grams', 1, 165, 3.6, 1, 83, 74, 0, 0, 31, 0.2, 2, 0.1, 256, 0, 4.2, 0, 0, 0),
+(4, 'Brown Rice', 'Grains', 45, 'grams', 1, 160, 1.5, 0.3, 0, 0, 34, 1.6, 0, 3, 0.1, 10, 0.4, 28, 0, 3.7, 0, 0),
+(5, 'Broccoli', 'Vegetable', 100, 'grams', 1, 34, 0.4, 0.1, 0, 33, 7, 2.6, 1.5, 2.8, 0.1, 47, 0.6, 316, 0, 0.7, 0.2, 89),
+(6, 'Salmon', 'Fish', 100, 'grams', 1, 206, 10, 1.8, 55, 57, 0, 0, 22, 0.2, 13, 0.5, 429, 0, 3.5, 0, 0, 0),
+(7, 'Avocado', 'Fruit', 100, 'grams', 1, 160, 14.7, 2.1, 0, 7, 8.5, 6.7, 0.7, 2, 0.1, 10, 0.6, 485, 0, 2, 0, 7),
+(8, 'Egg', 'Dairy', 50, 'grams', 1, 78, 5.3, 1.6, 186, 62, 0.6, 0, 0, 0.6, 6.3, 2, 0, 24, 0.2, 0, 0, 0),
+(9, 'Spinach', 'Vegetable', 100, 'grams', 1, 23, 0.4, 0, 0, 79, 3.6, 2.2, 0.4, 2.9, 0.2, 99, 2.7, 558, 0, 1.6, 0.9, 47),
+(10, 'Oatmeal', 'Grains', 40, 'grams', 1, 150, 2.5, 0.5, 0, 0, 27, 4, 1, 5, 0.3, 22, 1.4, 164, 0, 3.7, 0, 0);
+
+
+-- MEAL_CONTAINS_FOOD
+-- For each meal, associate some food items
+INSERT INTO MEAL_CONTAINS_FOOD (meal_id, food_id) 
 VALUES 
-(1, 1),
-(2, 2);
+(1, 8), -- Eggs
+(2, 3), -- Chicken Breast
+(3, 1), -- Apple
+(4, 6); -- Salmon
+
+INSERT INTO MEAL_CONTAINS_FOOD (meal_id, food_id) 
+VALUES 
+(1, 7); -- Avocado
 
 -- ========================================= UPDATE QUERIES =========================================
 
@@ -355,8 +424,8 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE DeleteAllMealsFromSpecifiedDay(IN specified_date DATE)
 BEGIN
-	DELETE FROM MEAL
-    WHERE (MEAL.meal_date = `DAY`.`date`) AND (`DAY`.`date` = specified_date);
+	DELETE FROM MEAL AS m
+    WHERE m.meal_date = specified_date;
 END//
 DELIMITER ;
 
@@ -435,6 +504,6 @@ FROM FOOD;
 -- Example call: Delete food id 1 from a meal with meal id 4
 SELECT * 
 FROM FOOD;
-CALL DeleteAllFoodsFromMeal(1, 4);
+CALL DeleteFoodFromMeal(1, 4);
 SELECT * 
 FROM FOOD;
