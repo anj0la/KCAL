@@ -109,30 +109,35 @@ CREATE TABLE MEAL_CONTAINS_FOOD
 
 -- ========================================= ALTER TABLE STATEMENTS =========================================
 
--- WE NEED ON UPDATE AND ON DELETE RIGHT?
-
 -- Users
 ALTER TABLE USER
+
+-- Primary key constraint
 ADD PRIMARY KEY (user_id);
 
 -- Day
-ALTER TABLE DAY
-ADD PRIMARY KEY (`date`),
+ALTER TABLE `DAY`
 
 -- Foreign key constraint (many days correspond to a user)
 ADD CONSTRAINT fk_user_id
 FOREIGN KEY (user_id)
 REFERENCES USER(user_id)
 ON DELETE SET NULL
-ON UPDATE CASCADE;
+ON UPDATE CASCADE,
+
+ADD PRIMARY KEY (`date`);
 
 -- Workout
 ALTER TABLE WORKOUT
 
+-- Foreign key constraint (many workouts correspond to a user)
 ADD CONSTRAINT fk_workout_user_id
 FOREIGN KEY (user_id)
-REFERENCES USER(user_id),
+REFERENCES USER(user_id)
+ON DELETE SET NULL
+ON UPDATE CASCADE,
 
+-- Primary key constraint
 ADD PRIMARY KEY (workout_id);
 
 -- Exercise
@@ -141,10 +146,11 @@ ADD PRIMARY KEY (exercise_id);
 
 -- Food
 ALTER TABLE FOOD
-ADD PRIMARY KEY (food_id);
 
-ALTER TABLE FOOD
-ALTER is_metric SET DEFAULT 1; -- the default value for metric is true
+-- Setting default value for metric = true (because this is a Canadian app)
+ALTER is_metric SET DEFAULT TRUE, 
+-- Primary key constraint
+ADD PRIMARY KEY (food_id);
 
 -- Meal
 ALTER TABLE MEAL
@@ -152,24 +158,33 @@ ALTER TABLE MEAL
 -- Foreign key constraint (many meals correspond to a day)
 ADD CONSTRAINT fk_meal_date
 FOREIGN KEY (meal_date)
-REFERENCES DAY(`date`),
+REFERENCES DAY(`date`)
+ON DELETE SET NULL
+ON UPDATE CASCADE,
 
 -- Uniqueness constraint on meal timestamp
 ADD CONSTRAINT meal_timestamp_uniqueness UNIQUE (meal_timestamp),
+-- Primary key constraint
 ADD PRIMARY KEY (meal_id);
 
 -- Meal Contains Food
 ALTER TABLE MEAL_CONTAINS_FOOD
 
--- Foreign key constraints (many meals correspond to many meals)
+-- Foreign key constraints (many meals correspond to many foods)
 ADD CONSTRAINT fk_meal_id
 FOREIGN KEY (meal_id)
-REFERENCES MEAL(meal_id),
+REFERENCES MEAL(meal_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
 
+-- Foreign key constraints (many foods correspond to many meals)
 ADD CONSTRAINT fk_food_id
 FOREIGN KEY (food_id)
-REFERENCES FOOD(food_id),
+REFERENCES FOOD(food_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
 
+-- Primary key constraint
 ADD PRIMARY KEY(meal_id, food_id);
 
 -- Workout Made of Exercise
@@ -178,12 +193,18 @@ ALTER TABLE WORKOUT_MADE_OF_EXERCISE
 -- Foreign key constraints (many exercises correspond to many workouts)
 ADD CONSTRAINT fk_exercise_id
 FOREIGN KEY (exercise_id)
-REFERENCES EXERCISE(exercise_id),
+REFERENCES EXERCISE(exercise_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
 
+-- Foreign key constraints (many workouts correspond to many exercises)
 ADD CONSTRAINT fk_workout_id
 FOREIGN KEY (workout_id)
-REFERENCES WORKOUT(workout_id),
+REFERENCES WORKOUT(workout_id)
+ON DELETE CASCADE
+ON UPDATE CASCADE,
 
+-- Primary key constraint
 ADD PRIMARY KEY(exercise_id, workout_id);
 
 -- ========================================= INSERT QUERIES =========================================
