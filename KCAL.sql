@@ -1,15 +1,14 @@
 /*
+File: KCAL.sql
 Author(s): Anjola Aina, Aarushi Gupta, Priscilla Adebanji, James Rota, Son Nghiem
 
-Changes made:
+Date: April 9th, 2024
 
-	- We have reverted Meal back to one table. 
-	This is because DAY_date and DAY_USER_user_id are foregin keys, 
-	and adding them as a primary key in the table makes it susceptible to update anomolies. 
-	Therefore, we made the primary key of MEAL Meal_id and Meal_timestamp unique, 
-	making it a candidate key. The meal_id would determine every single value in the MEAL table.
-    - We have changed email and password to user_email and user_password, as password is a keyword.
-    - We have changed all day attributes in MEAL, WORKOUT and DAY to be [table_name]_day as day is a keyword.
+Changes Made:
+
+	- We have reverted Meal back to one table. This is because DAY_date and DAY_USER_user_id are foregin keys, and adding them as a primary key in the table makes it susceptible to update anomolies. 
+	Therefore, we made the primary key of MEAL Meal_id and Meal_timestamp unique, making it a candidate key. The meal_id would determine every single value in the MEAL table.
+    - We have removed profile_img from the USER table to make it easier to insert data.
 
 */
 
@@ -259,15 +258,17 @@ VALUES
 
 -- ========================================= UPDATE QUERIES =========================================
 
--- UPDATE STATEMENTS: USER TABLE -- 
+-- The team chose the following queries to be executed as procedures, as we assume that users 
+-- will be executing the following queries the most. These are queries that you can expect a typical
+-- fitness application would allow a user to do.
 
 -- UPDATE PASSWORD (ie. change password) as a procedure --
 DELIMITER //
-CREATE PROCEDURE UpdateUserPassword(IN user_id INT, IN new_password INT)
+CREATE PROCEDURE UpdateUserPassword(IN user_id INT, IN new_password VARCHAR(25))
 BEGIN
-	UPDATE USER
-SET password = new_password
-WHERE user_id = user_id;
+	UPDATE USER AS u
+	SET u.password = new_password
+	WHERE u.user_id = user_id;
 END//
 DELIMITER ;
 
@@ -275,58 +276,26 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE UpdateUserTargetWeight(IN user_id INT, IN new_target_weight INT)
 BEGIN
-	UPDATE USER
-SET target_weight = new_target_weight 
-WHERE user_id = user_id;
+	UPDATE USER AS u
+	SET u.target_weight = new_target_weight 
+	WHERE u.user_id = user_id;
 END//
 DELIMITER ;
 
--- UPDATE LAST LOGGED IN (adjust the last time the user logged in) --
-UPDATE USER
-SET last_log_date = CURRENT_DATE();
-
--- ========================================= -- 
-
--- UPDATE STATEMENTS: DAY TABLE -- 
-
--- UPDATE DAY (Update DAY to the current day) for the current user --
-
-DELIMITER //
-CREATE PROCEDURE UpdateUserDay(IN user_id INT)
-BEGIN
-	UPDATE `DAY`
-	JOIN USER ON DAY.user_id = USER.user_id
-	SET DAY.date = CURRENT_DATE() 
-	WHERE USER.user_id = user_id;
-END//
-DELIMITER ;
-
--- Example of the statement when user_id = 1
-UPDATE `DAY`
-JOIN USER ON DAY.user_id = USER.user_id
-SET DAY.date = CURRENT_DATE()
-WHERE user_id = 1;
-
--- ========================================= -- 
-
--- UPDATE STATEMENTS: MEAL TABLE -- 
+-- Example call: Update the weight of user with id 1 to be 130 lbs
+CALL UpdateUserTargetWeight(1, 130);
 
 -- UPDATE MEAL CATEGORY (BREAKFAST, LUNCH, DINNER) --
 
-UPDATE MEAL
-JOIN USER ON MEAL.user_id = USER.user_id
-SET meal_category = 'Lunch'
-WHERE meal_id = 1;
+DELIMITER //
 
--- UPDATE MEAL TIME STAMP (DATE AND TIME) --
-UPDATE MEAL
-JOIN USER ON MEAL.user_id = USER.user_id
-SET meal_timestamp = NOW() -- NOW() GETS CURRENT TIME AND DATE
-WHERE meal_id = 1;
-
--- ========================================= -- 
-
--- UPDATE STATEMENTS: WORKOUT TABLE -- 
+CREATE PROCEDURE UpdateMealCategory(IN meal_id_p INT, IN meal_category_p VARCHAR(20))
+BEGIN
+    UPDATE MEAL AS m
+    SET m.meal_category = meal_category_p
+    WHERE m.meal_id = meal_id_p;
+END//
+DELIMITER ;
 
 -- UPDATE AN ENTIRE WORKOUT FOR A SPECIFIC workout_id
 DELIMITER //
@@ -336,33 +305,20 @@ BEGIN
 	SET w.workout_name = workout_name_p,
 		w.workout_date = workout_date_p,
 		w.user_id = user_id_p,
-		w.calories_burned = calories_burned_p,
+		w.calories_burned = calories_burned_p
 	WHERE w.workout_id = workout_id_p;
 END//
 DELIMITER ;
 
 -- UPDATE CALORIES BURNED (Update the number of calories burned throughout a workout) -- 
+DELIMITER //
 CREATE PROCEDURE UpdateCaloriesBurnt(IN workout_id_p INT, IN new_calories_burnt INT)
 BEGIN
 	UPDATE WORKOUT AS w
-	SET w.calories_burned = new_calories_burnt,
+	SET w.calories_burned = new_calories_burnt
 	WHERE w.workout_id = workout_id_p;
 END//
 DELIMITER ;
-
--- ========================================= -- 
-
--- UPDATE STATEMENTS: FOOD TABLE -- 
-
--- UPDATE THE SERVING SIZE BASED ON THE CURRENT SERVING SIZE -- 
-
-UPDATE FOOD
-SET serving_size = serving_size + 10 
-WHERE food_id = 1;
-
--- ========================================= -- 
-
--- UPDATE STATEMENTS: EXERCISE TABLE -- 
 
 -- UPDATE AN ENTIRE EXERCISE FOR A SPECIFIC exercise_id -- 
 
@@ -390,17 +346,10 @@ DELIMITER //
 CREATE PROCEDURE DeleteUser(IN user_id INT)
 BEGIN
 	-- Delete the user from the USERS table with the specified user id
-	DELETE FROM USER
-    WHERE USER.user_id = user_id;
+	DELETE FROM USER AS u
+    WHERE u.user_id = user_id;
 END//
 DELIMITER ;
-
--- Example: Delete user 4 from the table
-SELECT * 
-FROM USER;
-DeleteUser(4)
-SELECT * 
-FROM USER;
 
 -- Deleting all meals from a specified day (as a stored procedure)
 DELIMITER //
@@ -411,36 +360,18 @@ BEGIN
 END//
 DELIMITER ;
 
--- Example: Delete all meals from April 6th, 2024.
-SELECT * 
-FROM MEAL;
-DeleteAllMealsFromSpecifiedDay('2024-04-06')
-SELECT * 
-FROM MEAL;
-
 -- Deleting all foods from a specified meal (as a stored procedure)
--- The difference between this procedure and its former is that it does not delete the 
--- day from the table, just the foods and the meal itself
-
 DELIMITER //
 CREATE PROCEDURE DeleteAllFoodsFromMeal(IN meal_id INT)
 BEGIN
-	DELETE FROM FOOD
-	WHERE FOOD.food_id IN (
-    SELECT MEAL_CONTAINS_FOOD.food_id
-    FROM MEAL_CONTAINS_FOOD
-    JOIN MEAL ON MEAL_CONTAINS_FOOD.meal_id = meal_id
-    WHERE MEAL_CONTAINS_FOOD.food_id = FOOD.food_id); -- we use a select statement to link the meal_id
-													  -- to the food_id via the relationship table
+	DELETE FROM FOOD AS f
+	WHERE f.food_id IN (
+    SELECT mf.food_id
+    FROM MEAL_CONTAINS_FOOD AS mf
+    JOIN MEAL ON mf.meal_id = meal_id
+    WHERE mf.food_id = f.food_id); 
 END//
 DELIMITER ;
-
--- Example: Delete all foods from a meal with meal id 3
-SELECT * 
-FROM FOOD;
-DeleteAllFoodsFromMeal(4)
-SELECT * 
-FROM FOOD;
 
 -- Deleting a specific food from a specified meal (as a stored procedure)
 -- The difference between this procedure and its former is that it does not delete the 
@@ -451,35 +382,59 @@ CREATE PROCEDURE DeleteFoodFromMeal(IN meal_id INT, IN food_id INT)
 BEGIN
 	DELETE FROM FOOD
 	WHERE food_id IN (
-    SELECT MEAL_CONTAINS_FOOD.food_id
-    FROM MEAL_CONTAINS_FOOD
-    JOIN MEAL ON MEAL_CONTAINS_FOOD.meal_id = meal_id
-    WHERE MEAL_CONTAINS_FOOD.food_id = food_id); -- we use a select statement to link the meal_id
+    SELECT mf.food_id
+    FROM MEAL_CONTAINS_FOOD AS mf
+    JOIN MEAL ON mf.meal_id = meal_id
+    WHERE mf.food_id = food_id); -- we use a select statement to link the meal_id
 														-- to the food_id via the relationship table
 END//
 DELIMITER ;
 
--- Example: Delete food id 1 from a meal with meal id 4
+-- ========================================= SPECIFIC EXAMPLES USING QUERIES =========================================
+
+-- ======================= SPECIFIC UPDATE EXAMPLES =======================
+
+-- Example call: Update the password of user with id 1 to be 123456
+CALL UpdateUserPassword(1, '12345');
+
+-- Example call: Update meal category of user 1 to be Breakfast
+CALL UpdateMealCategory(1, 'Breakfast');
+
+-- Example call: Update the workout with an id value of 1, associated with user 1 to be an Afternoon Run
+CALL UpdateWorkout(1, 'Afternoon Run', CURRENT_DATE(), 1, 350);
+
+-- Example call: Update exercise with an id of 1 with the following values
+CALL UpdateExercise(1, 'Squat', 'Barbell', 'Strength', 'Quads', 'Glutes');
+
+-- Example call: Update calories burnt on the workout with an id value of 1
+CALL UpdateCaloriesBurnt(1, 400);
+
+-- ======================= SPECIFIC DELETE EXAMPLES =======================
+
+-- Example call: Delete user 4 from the table
+SELECT * 
+FROM USER;
+CALL DeleteUser(4);
+SELECT * 
+FROM USER;
+
+-- Example call: Delete all meals from April 6th, 2024
+SELECT * 
+FROM MEAL;
+CALL DeleteAllMealsFromSpecifiedDay('2024-04-06');
+SELECT * 
+FROM MEAL;
+
+-- Example call: Delete all foods from a meal with meal id 3
 SELECT * 
 FROM FOOD;
-DeleteAllFoodsFromMeal(1, 4)
+CALL DeleteAllFoodsFromMeal(3);
 SELECT * 
 FROM FOOD;
 
--- ========================================= SELECT QUERIES =========================================
-
-SELECT u.first_name, u.last_name, u.username, w.workout_date, w.calories_burned
-FROM USER u
-INNER JOIN WORKOUT w ON u.user_id = w.user_id
-WHERE w.workout_name = 'Upper';
-
-DELIMITER //
-CREATE PROCEDURE SelectAllUsersByWorkoutName(IN workout_name)
-BEGIN
-	SELECT u.first_name, u.last_name, u.username, w.workout_date, w.calories_burned
-FROM USER u
-INNER JOIN WORKOUT w ON u.user_id = w.user_id
-WHERE w.workout_name = workout_name;
-END//
-DELIMITER ;
-
+-- Example call: Delete food id 1 from a meal with meal id 4
+SELECT * 
+FROM FOOD;
+CALL DeleteAllFoodsFromMeal(1, 4);
+SELECT * 
+FROM FOOD;
