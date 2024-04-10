@@ -242,8 +242,7 @@ INSERT INTO FOOD VALUES
 
 -- UPDATE STATEMENTS: USER TABLE -- 
 
--- UPDATE PASSWORD (ie. change password) --
-
+-- UPDATE PASSWORD (ie. change password) as a procedure --
 DELIMITER //
 CREATE PROCEDURE UpdateUserPassword(IN user_id INT, IN new_password INT)
 BEGIN
@@ -253,27 +252,17 @@ WHERE user_id = user_id;
 END//
 DELIMITER ;
 
-
-UPDATE USER
-SET password = '12345'
-WHERE user_id = 1;
-
--- UPDATE WEIGHT (adjust current weight for progress)           --
--- Weight is measured as an int, assuming we are meaning pounds --
-
-UPDATE USER 
-SET weight = 125
-WHERE user_id = 1;
-
--- UPDATE TARGET WEIGHT (adjust target weight for new goals)    --
--- Weight is measured as an int, assuming we are meaning pounds --
-
-UPDATE USER
-SET target_weight = 120
-WHERE user_id = 1;
+-- UPDATE TARGET WEIGHT (ie. change goal weight) as a procedure --
+DELIMITER //
+CREATE PROCEDURE UpdateUserTargetWeight(IN user_id INT, IN new_target_weight INT)
+BEGIN
+	UPDATE USER
+SET target_weight = new_target_weight 
+WHERE user_id = user_id;
+END//
+DELIMITER ;
 
 -- UPDATE LAST LOGGED IN (adjust the last time the user logged in) --
-
 UPDATE USER
 SET last_log_date = CURRENT_DATE();
 
@@ -281,8 +270,19 @@ SET last_log_date = CURRENT_DATE();
 
 -- UPDATE STATEMENTS: DAY TABLE -- 
 
--- UPDATE DAY (Update DAY to the current day) --
+-- UPDATE DAY (Update DAY to the current day) for the current user --
 
+DELIMITER //
+CREATE PROCEDURE UpdateUserDay(IN user_id INT)
+BEGIN
+	UPDATE `DAY`
+	JOIN USER ON DAY.user_id = USER.user_id
+	SET DAY.date = CURRENT_DATE() 
+	WHERE USER.user_id = user_id;
+END//
+DELIMITER ;
+
+-- Example of the statement when user_id = 1
 UPDATE `DAY`
 JOIN USER ON DAY.user_id = USER.user_id
 SET DAY.date = CURRENT_DATE()
@@ -300,7 +300,6 @@ SET meal_category = 'Lunch'
 WHERE meal_id = 1;
 
 -- UPDATE MEAL TIME STAMP (DATE AND TIME) --
-
 UPDATE MEAL
 JOIN USER ON MEAL.user_id = USER.user_id
 SET meal_timestamp = NOW() -- NOW() GETS CURRENT TIME AND DATE
@@ -310,19 +309,27 @@ WHERE meal_id = 1;
 
 -- UPDATE STATEMENTS: WORKOUT TABLE -- 
 
--- UPDATE DATE FROM WORKOUT TO (DAY) DATE (Update DAY to the current day) --
+-- UPDATE AN ENTIRE WORKOUT FOR A SPECIFIC workout_id
+DELIMITER //
+CREATE PROCEDURE UpdateWorkout(IN workout_id_p INT, IN workout_name_p VARCHAR(25), IN workout_date_p DATE, IN user_id_p INT, IN calories_burned_p INT)
+BEGIN
+	UPDATE WORKOUT AS w
+	SET w.workout_name = workout_name_p,
+		w.workout_date = workout_date_p,
+		w.user_id = user_id_p,
+		w.calories_burned = calories_burned_p,
+	WHERE w.workout_id = workout_id_p;
+END//
+DELIMITER ;
 
-UPDATE WORKOUT
-JOIN DAY ON WORKOUT.user_id = DAY.user_id
-SET WORKOUT.date = DAY.date
-WHERE USER.User_id = 1;
-
--- UPDATE CALORIES BURNED (Update the number of calories burned throughout the workout) -- 
--- ASSUMPTION: We are updating the calories based on the current calories burned --
-
-UPDATE WORKOUT
-SET calories_burned = calories_burned + 5 -- ADDING TO THE CURRENT CALORIES BURNED --
-WHERE workout_id = 1;
+-- UPDATE CALORIES BURNED (Update the number of calories burned throughout a workout) -- 
+CREATE PROCEDURE UpdateCaloriesBurnt(IN workout_id_p INT, IN new_calories_burnt INT)
+BEGIN
+	UPDATE WORKOUT AS w
+	SET w.calories_burned = new_calories_burnt,
+	WHERE w.workout_id = workout_id_p;
+END//
+DELIMITER ;
 
 -- ========================================= -- 
 
@@ -338,18 +345,20 @@ WHERE food_id = 1;
 
 -- UPDATE STATEMENTS: EXERCISE TABLE -- 
 
--- UPDATE AN ENTIRE EXERCISE FOR A SPECIFIC Exercise_id-- 
+-- UPDATE AN ENTIRE EXERCISE FOR A SPECIFIC exercise_id -- 
 
-UPDATE EXERCISE
-SET exercise_name = 'Squat',
-    equipment_type = 'Barbell',
-    exercise_Category = 'Strength Training',
-    primary_muscle_grp = 'Glutes',
-    secondary_muscle_grp = 'Quads'
-WHERE exercise_id = 1;
-
--- ========================================= -- 
-
+DELIMITER //
+CREATE PROCEDURE UpdateExercise(IN exercise_id_p INT, IN exercise_name_p VARCHAR(25), IN equipment_type_p VARCHAR(25), IN exercise_category_p VARCHAR(25), IN primary_muscle_p VARCHAR(25), IN secondary_muscle_p VARCHAR(25))
+BEGIN
+	UPDATE EXERCISE AS e
+	SET e.exercise_name = exercise_name_p,
+		e.equipment_type = equipment_type_p,
+		e.exercise_category = exercise_category_p,
+		e.primary_muscle_grp = primary_muscle_p,
+		e.secondary_muscle_grp = secondary_muscle_p
+	WHERE e.exercise_id = exercise_id_p;
+END//
+DELIMITER ;
 
 -- ========================================= DELETE QUERIES =========================================
 
