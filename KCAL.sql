@@ -209,56 +209,53 @@ ADD PRIMARY KEY(exercise_id, workout_id);
 
 -- ========================================= INSERT QUERIES =========================================
 
--- USERS
-INSERT INTO USER VALUES 
+-- Inserting dummy data into USER table
+INSERT INTO USER (user_id, first_name, last_name, date_of_birth, gender, username, email, password, height, weight, target_weight, join_date, last_log_date)
+VALUES 
+(1, 'John', 'Doe', '1990-01-01', 'Male', 'johndoe', 'johndoe@example.com', 'password123', 180, 75, 70, '2024-01-01', '2024-04-09'),
+(2, 'Jane', 'Smith', '1985-05-15', 'Female', 'janesmith', 'janesmith@example.com', 'password456', 160, 55, 50, '2024-02-01', '2024-04-09');
 
--- Active Users
-(1, 'Jonathan', 'Magnus', 1997-09-24, 'Male', 
-'Jmagnus', 'Jmagnus@yahoo.com', '1$CoolPassword$1',
-178, 145, 190, 'duck_img.png', 2022-01-01, 2024-04-09),
+-- Inserting dummy data into DAY table
+INSERT INTO DAY (`date`, user_id)
+VALUES 
+('2024-04-09', 1),
+('2024-04-08', 2);
 
-(2, 'Wendy', 'Woo', 2000-02-07, 'Female', 
-'wendytheleader', 'wendy.woo@gmail.com', 'password$2452',
-178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
+-- Inserting dummy data into WORKOUT table
+INSERT INTO WORKOUT (workout_id, workout_name, workout_date, user_id, calories_burned)
+VALUES 
+(1, 'Morning Run', '2024-04-09', 1, 300),
+(2, 'Evening Gym Session', '2024-04-09', 2, 500);
 
-(3, 'Sandra', 'Parker', 1989-05-12, 'Female', 
-'sandragymgirl', 'sparker@hotmail.com', '',
-178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
+-- Inserting dummy data into EXERCISE table
+INSERT INTO EXERCISE (exercise_id, exercise_name, equipment_type, exercise_category, primary_muscle_grp, secondary_muscle_grp)
+VALUES 
+(1, 'Running', 'None', 'Cardio', 'Legs', NULL),
+(2, 'Weight Lifting', 'Dumbbells', 'Strength', 'Arms', 'Shoulders');
 
-(4, 'Wendy', 'Woo', 2000-02-07, 'Female', 
-'wendytheleader', 'wendy.woo@gmail.com', '',
-178, 145, 190, 'cat_img.png', 2020-02-11, 2024-04-09),
+-- Inserting dummy data into FOOD table
+INSERT INTO FOOD (food_id, food_name, food_category, serving_size, serving_unit, is_metric, calories, total_fats, saturated_fats, cholesterol, sodium, total_carbs, fibre, sugar, protein, calcium, iron, potassium, vitamin_D, magnesium, zinc, vitamin_A, vitamin_C)
+VALUES 
+(1, 'Apple', 'Fruit', '150', 'grams', TRUE, 52, 0.2, 0, 0, 1, 14, 2.4, 10.4, 0.3, 5, 0.1, 107, 0, 5, 0, 3, NULL),
+(2, 'Chicken Breast', 'Poultry', 100, 'grams', TRUE, 165, 3.6, 1, 85, 74, 0, 0, 0, 31, 1, 0.1, 256, 0, 12, 0, 0, NULL);
 
--- Inactive Users
-(5, 'Joshua', 'Phillips', 1995-08-27, 'Rather not say', 
-'D_GymRat', 'JPhillips@hotmail.com', 'NevaGiveUp_K**pPu$h1ng',
-180,300,200,"cool_dog_img.png", 2024-01-01, 2024-01-28);
+-- Inserting dummy data into MEAL table
+INSERT INTO MEAL (meal_id, meal_timestamp, meal_date, meal_category)
+VALUES 
+(1, '2024-04-09 12:00:00', '2024-04-09', 'Lunch'),
+(2, '2024-04-09 19:00:00', '2024-04-09', 'Dinner');
 
--- DAY
-INSERT INTO `DAY` VALUES 
--- yesterday
-(2024-04-08, 1),
+-- Inserting dummy data into MEAL_CONTAINS_FOOD table
+INSERT INTO MEAL_CONTAINS_FOOD (meal_id, food_id)
+VALUES 
+(1, 1),
+(2, 2);
 
--- today
-(2024-04-09, 1);
-
--- WORKOUT
-INSERT INTO WORKOUT VALUES 
-(101, 2024-04-08, 1, "LEGS", 500);
-
--- EXERCISE
-INSERT INTO EXCERCISE VALUES
-(201, "Bulgarian Split Squats", "Dumbbell", "Strength Training", "Quadriceps", "Glutes"),
-(202, "Squats", "Barbell", "Strength Training", "Quadriceps", "Glutes");
-
--- MEAL
-INSERT INTO MEAL VALUES 
-(98, 2024-04-08, 1, "Breakfast", '2024-04-08 18-59-13'), 
-(97, 2024-04-08, 1, "Lunch", '2024-04-08 10-05-13');
-
--- FOOD
-INSERT INTO FOOD VALUES 
-(1, 'Turtle Chips', 'Chips', 28, 'Grams', 1, 160, 10, 4, 0, 190, 16, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0);
+-- Inserting dummy data into WORKOUT_MADE_OF_EXERCISE table
+INSERT INTO WORKOUT_MADE_OF_EXERCISE (workout_id, exercise_id)
+VALUES 
+(1, 1),
+(2, 2);
 
 -- ========================================= UPDATE QUERIES =========================================
 
